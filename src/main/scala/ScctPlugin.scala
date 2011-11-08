@@ -65,7 +65,7 @@ object ScctPlugin extends Plugin {
 
             printf("currentRef = '%s'%n", currentRef)
 			    	project_docdir = ((target in (currentRef, Coverage) in doc) get structure.data) match {
-			    	  case Some(x) => x.absolutePath; case _ => "" }
+			    	  case Some(x) => (x / "coverage-report").absolutePath; case _ => "" }
 			      
 			    	project_scaladir = (scalaSource in (currentRef, Coverage) get structure.data) match { 
 			    	  case Some(x) => x.absolutePath; case _ => "" }
