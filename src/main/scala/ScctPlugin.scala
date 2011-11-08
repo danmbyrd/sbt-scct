@@ -25,7 +25,7 @@ object ScctPlugin extends Plugin {
 			
 			libraryDependencies <<= (scalaVersion, libraryDependencies) { (sv, deps) =>
 				val map = Map("2.9.1" -> "2.9.0-1", "2.9.0-1" -> "2.9.0-1","2.9.0" -> "2.9.0-1", "2.8.1" -> "2.8.0", "2.8.0" -> "2.8.0", "2.7.7" -> "2.7.7")
-				val scctVersion = map.getOrElse(sv, error("Unsupported Scala version " + sv))
+				val scctVersion = map.getOrElse(sv, sys.error("Unsupported Scala version " + sv))
 				deps :+ "reaktor" % ("scct_" + scctVersion) % "0.1-SNAPSHOT" % "coverage"
 			},
 			/* adding scct as a dependency */
@@ -101,9 +101,12 @@ object ScctPlugin extends Plugin {
 			  	System.setProperty(reportProperty, "true")
 				
 			  	println("Wait for report completion.")
-			  	
-			  	while (System.getProperty(reportProperty) != "done")
-			  		Thread.sleep(200)
+
+           val maxSleep = compat.Platform.currentTime + 60L*1000L
+			  	while (sys.props(reportProperty) != "done" && compat.Platform.currentTime < maxSleep)
+			  		Thread.sleep(200L)
+        if (sys.props(reportProperty) != "done")
+          println("Timed out waiting for report")
 			}
 			/* configuring scope 'CoverageTest' */
 	  )
