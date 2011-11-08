@@ -24,7 +24,7 @@ object ScctPlugin extends Plugin {
 			resolvers += "scct repository" at "http://mtkopone.github.com/scct/maven-repo",
 			
 			libraryDependencies <<= (scalaVersion, libraryDependencies) { (sv, deps) =>
-				val map = Map("2.9.0-1" -> "2.9.0-1","2.9.0" -> "2.9.0-1", "2.8.1" -> "2.8.0", "2.8.0" -> "2.8.0", "2.7.7" -> "2.7.7")
+				val map = Map("2.9.1" -> "2.9.0-1", "2.9.0-1" -> "2.9.0-1","2.9.0" -> "2.9.0-1", "2.8.1" -> "2.8.0", "2.8.0" -> "2.8.0", "2.7.7" -> "2.7.7")
 				val scctVersion = map.getOrElse(sv, error("Unsupported Scala version " + sv))
 				deps :+ "reaktor" % ("scct_" + scctVersion) % "0.1-SNAPSHOT" % "coverage"
 			},
@@ -44,9 +44,9 @@ object ScctPlugin extends Plugin {
 			/* modifying tasks */
 			TaskKey[Unit]("test") in Coverage <<= (TaskKey[Unit]("test") in CoverageTest).dependsOn(compile in Coverage),
 			
-			docDirectory in Coverage <<= crossTarget / "coverage-report",
+			(target in Coverage in doc) <<= crossTarget / "coverage-report",
 			
-			doc in Coverage <<= (docDirectory in Coverage) map { (d) => d },
+			(doc in Coverage) <<= (target in Coverage in doc) map { (d) => d },
 			
 			TaskKey[File]("doc") in Coverage <<= (TaskKey[File]("doc") in Coverage).dependsOn(test in Coverage),
 			/* modifying tasks */
@@ -62,8 +62,9 @@ object ScctPlugin extends Plugin {
 			    	
 			    	project_name = (name in currentRef get structure.data) match { 
 			    	  case Some(x) => x; case _ => "" }
-			    	
-			    	project_docdir = (docDirectory in (currentRef, Coverage) get structure.data) match { 
+
+            printf("currentRef = '%s'%n", currentRef)
+			    	project_docdir = ((target in (currentRef, Coverage) in doc) get structure.data) match {
 			    	  case Some(x) => x.absolutePath; case _ => "" }
 			      
 			    	project_scaladir = (scalaSource in (currentRef, Coverage) get structure.data) match { 
@@ -89,6 +90,7 @@ object ScctPlugin extends Plugin {
 			  println("Setting props for " + project_name)
 			  System.setProperty("scct.report.hook", "system.property")
 			  System.setProperty("scct.project.name", project_name)
+        printf("XXXX Report dir = '%s'%n", project_docdir)
 			  System.setProperty("scct.report.dir", project_docdir)
 			  System.setProperty("scct.source.dir", project_scaladir)
 			},
