@@ -63,7 +63,6 @@ object ScctPlugin extends Plugin {
 			    	project_name = (name in currentRef get structure.data) match { 
 			    	  case Some(x) => x; case _ => "" }
 
-            printf("currentRef = '%s'%n", currentRef)
 			    	project_docdir = ((target in (currentRef, Coverage) in doc) get structure.data) match {
 			    	  case Some(x) => (x / "coverage-report").absolutePath; case _ => "" }
 			      
@@ -90,7 +89,6 @@ object ScctPlugin extends Plugin {
 			  println("Setting props for " + project_name)
 			  System.setProperty("scct.report.hook", "system.property")
 			  System.setProperty("scct.project.name", project_name)
-        printf("XXXX Report dir = '%s'%n", project_docdir)
 			  System.setProperty("scct.report.dir", project_docdir)
 			  System.setProperty("scct.source.dir", project_scaladir)
 			},
