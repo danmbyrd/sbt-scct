@@ -1,3 +1,5 @@
+package scct
+
 import sbt._
 import Keys._
 
